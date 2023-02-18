@@ -39,14 +39,25 @@ function GraphDisplay(props) {
 	const nodeRadius = 0.02 * Math.min(props.width, props.height);
 	// Calculate the width of the edges
 	const edgeWidth = 0.005 * Math.min(props.width, props.height);
+
 	// Calculate the position of the nodes
-	const nodePositions = {};
-	for (const node of props.graph) {
-		nodePositions[node.id] = {
-			x: node.x * props.width,
-			y: node.y * props.height
-		};
-	}
+	// const nodePositions = {}; 
+	// for (const node of props.graph) {
+	// 	nodePositions[node.id] = {
+	// 		x: node.x * props.width,
+	// 		y: node.y * props.height
+	// 	};
+	// }
+	const nodePositions = React.useMemo(() => {
+		const _nodePositions = {};
+		for (const node of props.graph) {
+			_nodePositions[node.id] = {
+				x: node.x * props.width,
+				y: node.y * props.height
+			};
+		}
+		return _nodePositions;
+	}, [props.graph, props.width, props.height]); // Wrap the initialization in useMemo to avoid unnecessary re-renders
 
 	// Calculate the color of the nodes
 	const nodeColors = {};
@@ -76,8 +87,8 @@ function GraphDisplay(props) {
 	const textPositions = {};
 	for (const node of props.graph) {
 		textPositions[node.id] = {
-			x: nodePositions[node.id].x,
-			y: nodePositions[node.id].y + 1.5 * nodeRadius
+			x: nodePositions[node.id].x + 0.5 * nodeRadius,
+			y: nodePositions[node.id].y - 1.2 * nodeRadius
 		};
 	}
 
@@ -90,6 +101,25 @@ function GraphDisplay(props) {
 		const context = canvas.getContext('2d');
 		// Clear the canvas
 		context.clearRect(0, 0, props.width, props.height);
+
+		// Draw the grey background and the grid 
+		context.beginPath();
+		context.rect(0, 0, props.width, props.height);
+		context.fillStyle = 'lightgrey';
+		context.fill();
+		context.beginPath();
+		context.strokeStyle = 'grey';
+		context.lineWidth = 1;
+		for (let i = 0; i < props.width; i += props.width / 10) {
+			context.moveTo(i, 0);
+			context.lineTo(i, props.height);
+		}
+		for (let i = 0; i < props.height; i += props.width / 10) { // Use props.width instead of props.height to make the grid square
+			context.moveTo(0, i);
+			context.lineTo(props.width, i);
+		}
+		context.stroke();
+
 		// Draw the edges
 		for (const edge in edgePositions) {
 			context.beginPath();
@@ -112,10 +142,11 @@ function GraphDisplay(props) {
 		for (const node in textPositions) {
 			context.fillText(node, textPositions[node].x, textPositions[node].y);
 		}
+		
 	}, [props.graph, props.width, props.height, maxVoltage, maxCurrent, nodeRadius, edgeWidth, nodePositions, nodeColors, edgePositions, edgeColors, textPositions]);
 
 	return (
-		<canvas class="graph-display" ref={canvasRef} width={props.width} height={props.height} />
+		<canvas className="graph-display" ref={canvasRef} width={props.width} height={props.height} />
 	);
 }
 

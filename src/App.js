@@ -81,10 +81,8 @@ let graphData = [
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <GraphDisplay graph={graphData} width={480} height={360}/>
-      </header>
+      <img src={logo} className="App-logo" alt="logo" />
+      <GraphDisplay graph={graphData} width={480} height={360}/>
     </div>
   );
 }
