@@ -139,9 +139,15 @@ function GraphDisplay(props) {
 		// Draw the text
 		context.font = '15px Arial';
 		context.fillStyle = 'black';
+		context.shadowColor = 'black';
+		context.shadowBlur = 5;
+		context.shadowOffsetX = 2;
+		context.shadowOffsetY = 2;
+		// context.shadowColor = 'transparent';
 		for (const node in textPositions) {
 			context.fillText(node, textPositions[node].x, textPositions[node].y);
 		}
+
 		
 	}, [props.graph, props.width, props.height, maxVoltage, maxCurrent, nodeRadius, edgeWidth, nodePositions, nodeColors, edgePositions, edgeColors, textPositions]);
 
