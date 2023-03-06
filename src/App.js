@@ -2,6 +2,8 @@ import logo from './logo.svg';
 import './App.css';
 import GraphDisplay from './components/graphDisplay';
 import './components/graphDisplay.css';
+import { solveResistiveCircuit } from 'js-circuit-solver';
+
 
 let graphData = [
   {
