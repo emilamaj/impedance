@@ -1,4 +1,3 @@
-import logo from './logo.svg';
 import './App.css';
 import GraphDisplay from './components/graphDisplay';
 import './components/graphDisplay.css';
@@ -80,10 +79,10 @@ let graphData = [
   }
 ];
 
+
 function App() {
   return (
     <div className="App">
-      <img src={logo} className="App-logo" alt="logo" />
       <GraphDisplay graph={graphData} width={480} height={360}/>
     </div>
   );
