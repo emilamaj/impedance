@@ -60,37 +60,85 @@ function GraphDisplay(props) {
 	}, [props.graph, props.width, props.height]); // Wrap the initialization in useMemo to avoid unnecessary re-renders
 
 	// Calculate the color of the nodes
-	const nodeColors = {};
-	for (const node of props.graph) {
-		nodeColors[node.id] = `rgb(${Math.round(255 * node.voltage / maxVoltage)}, ${Math.round(255 * (1 - Math.abs(node.voltage) / maxVoltage))}, 0)`;
-	}
-	// Calculate the color of the edges
-	const edgeColors = {};
-	for (const node of props.graph) {
-		for (const connection of node.connections) {
-			edgeColors[`${node.id}-${connection.id}`] = `rgb(${Math.round(255 * connection.current / maxCurrent)}, ${Math.round(255 * (1 - Math.abs(connection.current) / maxCurrent))}, 0)`;
+	// const nodeColors = {};
+	// for (const node of props.graph) {
+	// 	nodeColors[node.id] = `rgb(${Math.round(255 * node.voltage / maxVoltage)}, ${Math.round(255 * (1 - Math.abs(node.voltage) / maxVoltage))}, 0)`;
+	// }
+	// Memoize the nodeColors calculation
+	const nodeColors = React.useMemo(() => {
+		const _nodeColors = {};
+		for (const node of props.graph) {
+			_nodeColors[node.id] = `rgb(${Math.round(255 * node.voltage / maxVoltage)}, ${Math.round(255 * (1 - Math.abs(node.voltage) / maxVoltage))}, 0)`;
 		}
-	}
+		return _nodeColors;
+	}, [props.graph, maxVoltage]); // Wrap the initialization in useMemo to avoid unnecessary re-renders
+
+	// Calculate the color of the edges
+	// const edgeColors = {};
+	// for (const node of props.graph) {
+	// 	for (const connection of node.connections) {
+	// 		edgeColors[`${node.id}-${connection.id}`] = `rgb(${Math.round(255 * connection.current / maxCurrent)}, ${Math.round(255 * (1 - Math.abs(connection.current) / maxCurrent))}, 0)`;
+	// 	}
+	// }
+	// Memoize the edgeColors calculation
+	const edgeColors = React.useMemo(() => {
+		const _edgeColors = {};
+		for (const node of props.graph) {
+			for (const connection of node.connections) {
+				_edgeColors[`${node.id}-${connection.id}`] = `rgb(${Math.round(255 * connection.current / maxCurrent)}, ${Math.round(255 * (1 - Math.abs(connection.current) / maxCurrent))}, 0)`;
+			}
+		}
+		return _edgeColors;
+	}, [props.graph, maxCurrent]); // Wrap the initialization in useMemo to avoid unnecessary re-renders
+
+
 	// Calculate the position of the edges
-	const edgePositions = {};
-	for (const node of props.graph) {
-		for (const connection of node.connections) {
-			edgePositions[`${node.id}-${connection.id}`] = {
-				x1: nodePositions[node.id].x,
-				y1: nodePositions[node.id].y,
-				x2: nodePositions[connection.id].x,
-				y2: nodePositions[connection.id].y
+	// const edgePositions = {};
+	// for (const node of props.graph) {
+	// 	for (const connection of node.connections) {
+	// 		edgePositions[`${node.id}-${connection.id}`] = {
+	// 			x1: nodePositions[node.id].x,
+	// 			y1: nodePositions[node.id].y,
+	// 			x2: nodePositions[connection.id].x,
+	// 			y2: nodePositions[connection.id].y
+	// 		};
+	// 	}
+	// }
+	// Memoize the edgePositions calculation
+	const edgePositions = React.useMemo(() => {
+		const _edgePositions = {};
+		for (const node of props.graph) {
+			for (const connection of node.connections) {
+				_edgePositions[`${node.id}-${connection.id}`] = {
+					x1: nodePositions[node.id].x,
+					y1: nodePositions[node.id].y,
+					x2: nodePositions[connection.id].x,
+					y2: nodePositions[connection.id].y
+				};
+			}
+		}
+		return _edgePositions;
+	}, [props.graph, nodePositions]); // Wrap the initialization in useMemo to avoid unnecessary re-renders
+
+	// Calculate the position of the text
+	// const textPositions = {};
+	// for (const node of props.graph) {
+	// 	textPositions[node.id] = {
+	// 		x: nodePositions[node.id].x + 0.5 * nodeRadius,
+	// 		y: nodePositions[node.id].y - 1.2 * nodeRadius
+	// 	};
+	// }
+	// Memoize the textPositions calculation
+	const textPositions = React.useMemo(() => {
+		const _textPositions = {};
+		for (const node of props.graph) {
+			_textPositions[node.id] = {
+				x: nodePositions[node.id].x + 0.5 * nodeRadius,
+				y: nodePositions[node.id].y - 1.2 * nodeRadius
 			};
 		}
-	}
-	// Calculate the position of the text
-	const textPositions = {};
-	for (const node of props.graph) {
-		textPositions[node.id] = {
-			x: nodePositions[node.id].x + 0.5 * nodeRadius,
-			y: nodePositions[node.id].y - 1.2 * nodeRadius
-		};
-	}
+		return _textPositions;
+	}, [props.graph, nodePositions, nodeRadius]); // Wrap the initialization in useMemo to avoid unnecessary re-renders
 
 	// Get a reference to the canvas element
 	const canvasRef = React.useRef(null);
@@ -139,11 +187,6 @@ function GraphDisplay(props) {
 		// Draw the text
 		context.font = '15px Arial';
 		context.fillStyle = 'black';
-		context.shadowColor = 'black';
-		context.shadowBlur = 5;
-		context.shadowOffsetX = 2;
-		context.shadowOffsetY = 2;
-		// context.shadowColor = 'transparent';
 		for (const node in textPositions) {
 			context.fillText(node, textPositions[node].x, textPositions[node].y);
 		}
