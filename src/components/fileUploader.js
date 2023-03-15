@@ -1,6 +1,6 @@
 import React from "react";
 
-function FileUploader(handleResult) {
+function FileUploader({handleResult}) {
 
   function handleUpload(event) {
     const file = event.target.files[0];
