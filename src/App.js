@@ -15,6 +15,7 @@ function App() {
 		graph: [],
 		borderNodes: [],
 		resultGraph: [],
+		nodeCoord: [],
 	});
 
 	// This function is called when the user uploads an image. It processes the image into the 2D array of pixels 'pixelGrid'
@@ -45,14 +46,16 @@ function App() {
 			return;
 		}
 		const radius = state.pixelGrid[0].length/2; // The radius of the circle is half the width of the image
-		const {graph, borderNodes} = pixelGridToGraph(state.pixelGrid, radius);
+		const {graph, borderNodes, nodeCoord} = pixelGridToGraph(state.pixelGrid, radius);
 		console.log("Graph :", graph);
 		console.log("Border nodes :", borderNodes);
+		console.log("Node coordinates :", nodeCoord);
 
 		setState({
 			...state,
 			graph: graph,
 			borderNodes: borderNodes,
+			nodeCoord: nodeCoord,
 		});
 	}
 

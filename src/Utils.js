@@ -52,6 +52,7 @@ async function imageStringToGrid(base64Image) {
 function pixelGridToGraph(pixelGrid, radius) {
     // Graph will contain the nodes and their connections
     const graph = [];
+    const nodeCoord = [];
     let graphID = 0;
 
     // Get the center of the 2D grid
@@ -69,34 +70,32 @@ function pixelGridToGraph(pixelGrid, radius) {
             // Only include the pixels that are less than a given radius from the center of the 2D grid
             if (Math.sqrt(Math.pow(i - center.x, 2) + Math.pow(j - center.y, 2)) <= radius) {
                 // Create a node in the graph
-                const node = {
-                    coordinates: {x: i, y: j}, // The position of the node in the 2D grid will be replace by the ID of the node in the graph
-                    connections: [],
-                };
+                const node = []
+                nodeCoord.push({x: i, y: j})
 
                 let connectionCount = 0;
 
                 // Add connections to the nodes connected to the current node, if they are less than a given radius from the center of the 2D grid
                 if (i - 1 >= 0 && Math.sqrt(Math.pow(i - 1 - center.x, 2) + Math.pow(j - center.y, 2)) <= radius) {
-                    node.connections.push({
+                    node.push({
                         to: {x: i - 1, y: j}, // The position of the node in the 2D grid will be replace by the ID of the node in the graph
                         resistance: (1/pixelGrid[i][j] + 1/pixelGrid[i - 1][j]) / 2});
                     connectionCount++;
                 }
                 if (i + 1 < pixelGrid.length && Math.sqrt(Math.pow(i + 1 - center.x, 2) + Math.pow(j - center.y, 2)) <= radius) {
-                    node.connections.push({
+                    node.push({
                         to: {x: i + 1, y: j}, // The position of the node in the 2D grid will be replace by the ID of the node in the graph
                         resistance: (1/pixelGrid[i][j] + 1/pixelGrid[i + 1][j]) / 2});
                     connectionCount++;
                 }
                 if (j - 1 >= 0 && Math.sqrt(Math.pow(i - center.x, 2) + Math.pow(j - 1 - center.y, 2)) <= radius) {
-                    node.connections.push({
+                    node.push({
                         to: {x: i, y: j - 1}, // The position of the node in the 2D grid will be replace by the ID of the node in the graph
                         resistance: (1/pixelGrid[i][j] + 1/pixelGrid[i][j - 1]) / 2});
                     connectionCount++;
                 }
                 if (j + 1 < pixelGrid[0].length && Math.sqrt(Math.pow(i - center.x, 2) + Math.pow(j + 1 - center.y, 2)) <= radius) {
-                    node.connections.push({
+                    node.push({
                         to: {x: i, y: j + 1}, // The position of the node in the 2D grid will be replace by the ID of the node in the graph
                         resistance: (1/pixelGrid[i][j] + 1/pixelGrid[i][j + 1]) / 2});
                     connectionCount++;
@@ -118,13 +117,13 @@ function pixelGridToGraph(pixelGrid, radius) {
 
     // Replace the position of the node in the 2D grid with the ID of the node in the graph
     for (let i = 0; i < graph.length; i++) {
-        for (let j = 0; j < graph[i].connections.length; j++) {
-            // graph[i].connections[j].to = graphIDmap.get(graph[i].connections[j].to);
-            graph[i].connections[j].to = coordDict[graph[i].connections[j].to.x + "," + graph[i].connections[j].to.y];
+        for (let j = 0; j < graph[i].length; j++) {
+            // graph[i][j].to = graphIDmap.get(graph[i][j].to);
+            graph[i][j].to = coordDict[graph[i][j].to.x + "," + graph[i][j].to.y];
         }
     }
 
-    return {graph, borderNodes}
+    return {graph, borderNodes, nodeCoord}
 }
 
 
