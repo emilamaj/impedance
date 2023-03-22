@@ -17,7 +17,7 @@ import './graphDisplay.css';
 //            voltage: the voltage of the node
 //            connections: an array of objects, each object representing a connection to another node.
 //                         Each object has the following properties:
-//                           id: a unique identifier for the node
+//                           to: a unique identifier for the node
 //                           current: the resistance of the connection
 //   width: the width of the canvas element
 //   height: the height of the canvas element
@@ -41,13 +41,6 @@ function GraphDisplay(props) {
 	const edgeWidth = 0.005 * Math.min(props.width, props.height);
 
 	// Calculate the position of the nodes
-	// const nodePositions = {}; 
-	// for (const node of props.graph) {
-	// 	nodePositions[node.id] = {
-	// 		x: node.x * props.width,
-	// 		y: node.y * props.height
-	// 	};
-	// }
 	const nodePositions = React.useMemo(() => {
 		const _nodePositions = {};
 		for (const node of props.graph) {
@@ -60,11 +53,6 @@ function GraphDisplay(props) {
 	}, [props.graph, props.width, props.height]); // Wrap the initialization in useMemo to avoid unnecessary re-renders
 
 	// Calculate the color of the nodes
-	// const nodeColors = {};
-	// for (const node of props.graph) {
-	// 	nodeColors[node.id] = `rgb(${Math.round(255 * node.voltage / maxVoltage)}, ${Math.round(255 * (1 - Math.abs(node.voltage) / maxVoltage))}, 0)`;
-	// }
-	// Memoize the nodeColors calculation
 	const nodeColors = React.useMemo(() => {
 		const _nodeColors = {};
 		for (const node of props.graph) {
@@ -74,18 +62,11 @@ function GraphDisplay(props) {
 	}, [props.graph, maxVoltage]); // Wrap the initialization in useMemo to avoid unnecessary re-renders
 
 	// Calculate the color of the edges
-	// const edgeColors = {};
-	// for (const node of props.graph) {
-	// 	for (const connection of node.connections) {
-	// 		edgeColors[`${node.id}-${connection.id}`] = `rgb(${Math.round(255 * connection.current / maxCurrent)}, ${Math.round(255 * (1 - Math.abs(connection.current) / maxCurrent))}, 0)`;
-	// 	}
-	// }
-	// Memoize the edgeColors calculation
 	const edgeColors = React.useMemo(() => {
 		const _edgeColors = {};
 		for (const node of props.graph) {
 			for (const connection of node.connections) {
-				_edgeColors[`${node.id}-${connection.id}`] = `rgb(${Math.round(255 * connection.current / maxCurrent)}, ${Math.round(255 * (1 - Math.abs(connection.current) / maxCurrent))}, 0)`;
+				_edgeColors[`${node.id}-${connection.to}`] = `rgb(${Math.round(255 * connection.current / maxCurrent)}, ${Math.round(255 * (1 - Math.abs(connection.current) / maxCurrent))}, 0)`;
 			}
 		}
 		return _edgeColors;
@@ -93,42 +74,22 @@ function GraphDisplay(props) {
 
 
 	// Calculate the position of the edges
-	// const edgePositions = {};
-	// for (const node of props.graph) {
-	// 	for (const connection of node.connections) {
-	// 		edgePositions[`${node.id}-${connection.id}`] = {
-	// 			x1: nodePositions[node.id].x,
-	// 			y1: nodePositions[node.id].y,
-	// 			x2: nodePositions[connection.id].x,
-	// 			y2: nodePositions[connection.id].y
-	// 		};
-	// 	}
-	// }
-	// Memoize the edgePositions calculation
 	const edgePositions = React.useMemo(() => {
 		const _edgePositions = {};
 		for (const node of props.graph) {
 			for (const connection of node.connections) {
-				_edgePositions[`${node.id}-${connection.id}`] = {
+				_edgePositions[`${node.id}-${connection.to}`] = {
 					x1: nodePositions[node.id].x,
 					y1: nodePositions[node.id].y,
-					x2: nodePositions[connection.id].x,
-					y2: nodePositions[connection.id].y
+					x2: nodePositions[connection.to].x,
+					y2: nodePositions[connection.to].y
 				};
 			}
 		}
 		return _edgePositions;
 	}, [props.graph, nodePositions]); // Wrap the initialization in useMemo to avoid unnecessary re-renders
 
-	// Calculate the position of the text
-	// const textPositions = {};
-	// for (const node of props.graph) {
-	// 	textPositions[node.id] = {
-	// 		x: nodePositions[node.id].x + 0.5 * nodeRadius,
-	// 		y: nodePositions[node.id].y - 1.2 * nodeRadius
-	// 	};
-	// }
-	// Memoize the textPositions calculation
+	// Calculate the position of the text labels of the node ids
 	const textPositions = React.useMemo(() => {
 		const _textPositions = {};
 		for (const node of props.graph) {
@@ -139,6 +100,34 @@ function GraphDisplay(props) {
 		}
 		return _textPositions;
 	}, [props.graph, nodePositions, nodeRadius]); // Wrap the initialization in useMemo to avoid unnecessary re-renders
+
+	// Calculate the position of the grid scale numbers (the numbers on the axes)
+	// Horizontal numbers
+	const horizontalNumbers = React.useMemo(() => {
+		const _horizontalNumbers = [];
+		for (let i = 0; i <= 10; i++) {
+			_horizontalNumbers.push({
+				x: i * props.width / 10,
+				y: 0.02 * props.height,
+				text: (i/10).toString()
+			});
+		}
+		return _horizontalNumbers;
+	}, [props.width, props.height]); // Wrap the initialization in useMemo to avoid unnecessary re-renders
+
+	// Vertical numbers
+	// Note: the grid is square but the canvas is not
+	const verticalNumbers = React.useMemo(() => {
+		const _verticalNumbers = [];
+		for (let i = 0; i <= 10; i++) {
+			_verticalNumbers.push({
+				x: 0,	
+				y: (i/10) * props.width,
+				text: (i/10).toString()
+			});
+		}
+		return _verticalNumbers;
+	}, [props.height]); // Wrap the initialization in useMemo to avoid unnecessary re-renders
 
 	// Get a reference to the canvas element
 	const canvasRef = React.useRef(null);
@@ -158,10 +147,14 @@ function GraphDisplay(props) {
 		context.beginPath();
 		context.strokeStyle = 'grey';
 		context.lineWidth = 1;
+
+		// Draw the grid (horizontal and vertical lines)
+		// Horizontal lines
 		for (let i = 0; i < props.width; i += props.width / 10) {
 			context.moveTo(i, 0);
 			context.lineTo(i, props.height);
 		}
+		// Vertical lines
 		for (let i = 0; i < props.height; i += props.width / 10) { // Use props.width instead of props.height to make the grid square
 			context.moveTo(0, i);
 			context.lineTo(props.width, i);
@@ -184,15 +177,25 @@ function GraphDisplay(props) {
 			context.fillStyle = nodeColors[node];
 			context.fill();
 		}
-		// Draw the text
-		context.font = '15px Arial';
+		// Draw the text of the node labels
+		// context.font = '15px Arial';
+		// context.fillStyle = 'black';
+		// for (const node in textPositions) {
+		// 	context.fillText(node, textPositions[node].x, textPositions[node].y);
+		// }
+		// Draw the grid scale numbers
+		context.font = '10px Arial';
 		context.fillStyle = 'black';
-		for (const node in textPositions) {
-			context.fillText(node, textPositions[node].x, textPositions[node].y);
+		// Horizontal scale
+		for (const number of horizontalNumbers) {
+			context.fillText(number.text, number.x, number.y);
 		}
-
+		// Vertical scale
+		for (const number of verticalNumbers) {
+			context.fillText(number.text, number.x, number.y);
+		}
 		
-	}, [props.graph, props.width, props.height, maxVoltage, maxCurrent, nodeRadius, edgeWidth, nodePositions, nodeColors, edgePositions, edgeColors, textPositions]);
+	}, [props.graph, props.width, props.height, maxVoltage, maxCurrent, nodeRadius, edgeWidth, nodePositions, nodeColors, edgePositions, edgeColors, textPositions, horizontalNumbers, verticalNumbers]); // Wrap the drawing in useEffect to avoid unnecessary re-renders
 
 	return (
 		<canvas className="graph-display" ref={canvasRef} width={props.width} height={props.height} />
