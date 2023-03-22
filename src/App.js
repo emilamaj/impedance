@@ -51,6 +51,14 @@ function App() {
 		console.log("Border nodes :", borderNodes);
 		console.log("Node coordinates :", nodeCoord);
 
+		// FIXME: Set the resistance of the connections to 1
+		console.log("DEBUG: Setting the resistance of all connections to 1")
+		for (let i = 0; i < graph.length; i++) {
+			for (let j = 0; j < graph[i].length; j++) {
+				graph[i][j].resistance = 1;
+			}
+		}
+
 		setState({
 			...state,
 			graph: graph,
@@ -71,8 +79,20 @@ function App() {
 		
 		console.log("Reference node :", referenceNode);
 		console.log("Ground node :", groundNode);
-		const resGraph = solveResistiveCircuit(state.graph, groundNode, referenceNode, referenceVoltage, true);
-		console.log(resGraph);
+		const resGraph = solveResistiveCircuit(state.graph, groundNode, referenceNode, referenceVoltage, false);
+
+		// const resGraph = solveResistiveCircuit(sampleCircuit, 1, 0, 1, false);
+
+		// For each node of the graph, give x/y coordinates between 0 and 1, and an id equal to its index
+		for (let i = 0; i < resGraph.length; i++) {
+			// resGraph[i].x = Math.random();
+			// resGraph[i].y = Math.random();
+			resGraph[i].x = state.nodeCoord[i].x;
+			resGraph[i].y = state.nodeCoord[i].y;
+			resGraph[i].id = i;
+		}
+
+		console.log("Result graph :", resGraph)
 
 		setState({
 			...state,
@@ -83,18 +103,38 @@ function App() {
 
 	return (
 		<div className="App">
-			Button for uploading a PNG image
-			<FileUploader handleResult={handleUpload}/>
+			<p className="label-title-page">Electrical Impedance Tomography</p>
 
-			Button for converting the base 64 encoded image string to a 2D array of pixels
-			<button onClick={handleProcess}>Process</button>
+			<div className="container-section">
+				<div className="container-pane-left">
+					<p className="label-title-pane">Parameters</p>
 
-			Button for converting the 2D array of pixels to a circuit graph
-			<button onClick={handleGraphConvertion}>Convert to graph</button>
+					<div className="container-element">
+						<p className="label-element">Load resistance map (*.png)</p>
+						<FileUploader handleResult={handleUpload}/>
+					</div>
 
-			Button for solving the circuit
-			<button onClick={handleSolve}>Solve</button>
-			<GraphDisplay graph={state.resultGraph} width={480} height={360}/>
+					<div className="container-element">
+						<p className="label-element">Process image into pixel grid</p>
+						<button onClick={handleProcess}>Process Image</button>
+					</div>
+					
+					<div className="container-element">
+						<p className="label-element">Process grid into circuit graph</p>
+						<button onClick={handleGraphConvertion}>Convert to Graph</button>
+					</div>
+
+					<div className="container-element">
+						<p className="label-element">Solve circuit</p>
+						<button onClick={handleSolve}>Solve</button>
+					</div>
+				</div>
+
+				<div className="container-pane-right">
+					<p className="label-title-pane">View Results</p>
+					<GraphDisplay graph={state.resultGraph} width={480} height={360}/>
+				</div>
+			</div>
 		</div>
 	);
 }

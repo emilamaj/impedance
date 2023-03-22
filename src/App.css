@@ -6,14 +6,56 @@
   margin-top: 5%;
 }
 
+.label-title-page {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #4a4a4a;
+}
 
-/* .App-header {
-  min-height: 100vh;
-  background-color: gray;
+.container-section {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+
+}
+
+.container-pane-left {
+  width: 50%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-} */
+  border: 1px solid grey;
+  margin: 1rem;
+  padding: 1rem;
+  background-color: #f2f2f2;
+}
+
+.container-pane-right {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid grey;
+  margin: 1rem;
+  padding: 1rem;
+  background-color: #f2f2f2;
+}
+
+.label-title-pane {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #4a4a4a;
+  margin: 0 0 1rem 0;
+}
+
+.label-element {
+  margin: 0;
+}
+
+.container-element {
+  display: flex;
+  flex-direction: column;
+  justify-content: left;
+  /* width: 100%; */
+  margin: 1rem;
+}

@@ -71,7 +71,8 @@ function pixelGridToGraph(pixelGrid, radius) {
             if (Math.sqrt(Math.pow(i - center.x, 2) + Math.pow(j - center.y, 2)) <= radius) {
                 // Create a node in the graph
                 const node = []
-                nodeCoord.push({x: i, y: j})
+                // Store the position of the node in the 2D grid. Values are from 0 to 1.
+                nodeCoord.push({x: i / pixelGrid.length, y: j / pixelGrid[0].length});
 
                 let connectionCount = 0;
 
