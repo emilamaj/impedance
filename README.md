@@ -1,5 +1,5 @@
 # Electrical Impedance Tomography 
-![Deploy to Pages](https://github.com/emilamaj/impedance/actions/workflows/node-react-reages.js.yml/badge.svg)
+![Deploy to Pages](https://github.com/emilamaj/impedance/actions/workflows/node-react-pages.js.yml/badge.svg)
 
 ![Electrical Impedance Tomography](/main_screenshot.png)
 This web app takes as input an image representing an electrically conductive medium.
