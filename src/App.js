@@ -7,6 +7,9 @@ import './App.css';
 import { useState } from 'react';
 import { solveResistiveCircuit } from 'js-circuit-solver';
 
+const minPixelValue = 1;
+const minCircuitResistance = 0.5;
+const maxCircuitResistance = 1000;
 
 function App() {
 	const [state, setState] = useState({
@@ -31,7 +34,7 @@ function App() {
 		if (state.imageStringB64 === null) {
 			return;
 		}
-		const pixelGrid = await imageStringToGrid(state.imageStringB64);
+		const pixelGrid = await imageStringToGrid(state.imageStringB64, minPixelValue);
 		console.log(pixelGrid);
 
 		setState({
@@ -46,18 +49,10 @@ function App() {
 			return;
 		}
 		const radius = state.pixelGrid[0].length/2; // The radius of the circle is half the width of the image
-		const {graph, borderNodes, nodeCoord} = pixelGridToGraph(state.pixelGrid, radius);
+		const {graph, borderNodes, nodeCoord} = pixelGridToGraph(state.pixelGrid, radius, minCircuitResistance, maxCircuitResistance);
 		console.log("Graph :", graph);
 		console.log("Border nodes :", borderNodes);
 		console.log("Node coordinates :", nodeCoord);
-
-		// FIXME: Set the resistance of the connections to 1
-		console.log("DEBUG: Setting the resistance of all connections to 1")
-		for (let i = 0; i < graph.length; i++) {
-			for (let j = 0; j < graph[i].length; j++) {
-				graph[i][j].resistance = 1;
-			}
-		}
 
 		setState({
 			...state,

@@ -1,7 +1,7 @@
 
 
 // This function converts a base64-encoded PNG image to a 2D array of pixels.
-async function imageStringToGrid(base64Image) {
+async function imageStringToGrid(base64Image, minIntensity=1) {
     // Decode the base64 image data into a binary string
     // const binaryString = atob(base64Image.split(',')[1]);
   
@@ -36,7 +36,7 @@ async function imageStringToGrid(base64Image) {
             const b = pixelData[i + 2];
             // const a = pixelData[i + 3];
             const intensity = (r + g + b) / 3; // Convert to grayscale intensity
-            grid[y][x] = intensity;
+            grid[y][x] = (intensity>0) ? intensity : minIntensity;
         }
     }
     
@@ -49,7 +49,8 @@ async function imageStringToGrid(base64Image) {
 // Only the pixels that are connected to each other are included in the graph.
 // Only the pixels that are less than a given radius from the center of the 2D grid are included in the graph.
 // The graph is returned as an array of objects, where each object represents ith node in the graph and its connections.
-function pixelGridToGraph(pixelGrid, radius) {
+// The input conductivity is between 1 and 255, so the resistance is between 1/255 and 1. We scale it to be between minRes and maxRes.
+function pixelGridToGraph(pixelGrid, radius, minRes=0.05, maxRes=100) {
     // Graph will contain the nodes and their connections
     const graph = [];
     const nodeCoord = [];
@@ -121,6 +122,9 @@ function pixelGridToGraph(pixelGrid, radius) {
         for (let j = 0; j < graph[i].length; j++) {
             // graph[i][j].to = graphIDmap.get(graph[i][j].to);
             graph[i][j].to = coordDict[graph[i][j].to.x + "," + graph[i][j].to.y];
+
+            // Scale the resistance to be between minRes and maxRes
+            graph[i][j].resistance = graph[i][j].resistance * (maxRes - minRes) + minRes;
         }
     }
 
