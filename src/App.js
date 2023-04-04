@@ -8,8 +8,8 @@ import { useState } from 'react';
 import { solveResistiveCircuit } from 'js-circuit-solver';
 
 const minPixelValue = 1;
-const minCircuitResistance = 0.5;
-const maxCircuitResistance = 1000;
+const minCircuitResistance = 1;
+const maxCircuitResistance = 10;
 
 function App() {
 	const [state, setState] = useState({
@@ -74,9 +74,12 @@ function App() {
 		
 		console.log("Reference node :", referenceNode);
 		console.log("Ground node :", groundNode);
-		const resGraph = solveResistiveCircuit(state.graph, groundNode, referenceNode, referenceVoltage, false);
 
-		// const resGraph = solveResistiveCircuit(sampleCircuit, 1, 0, 1, false);
+		// Solve the circuit and timing
+		const start = new Date().getTime();
+		const resGraph = solveResistiveCircuit(state.graph, groundNode, referenceNode, referenceVoltage);
+		const end = new Date().getTime();
+		console.log("Solving time :", end - start, "ms");
 
 		// For each node of the graph, give x/y coordinates between 0 and 1, and an id equal to its index
 		for (let i = 0; i < resGraph.length; i++) {
