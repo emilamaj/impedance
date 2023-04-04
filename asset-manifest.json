@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/impedance/static/css/main.72d1e0d0.css",
+    "main.js": "/impedance/static/js/main.377bbfd2.js",
+    "index.html": "/impedance/index.html",
+    "main.72d1e0d0.css.map": "/impedance/static/css/main.72d1e0d0.css.map",
+    "main.377bbfd2.js.map": "/impedance/static/js/main.377bbfd2.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.72d1e0d0.css",
+    "static/js/main.377bbfd2.js"
+  ]
+}
