@@ -127,7 +127,7 @@ function GraphDisplay(props) {
 			});
 		}
 		return _verticalNumbers;
-	}, [props.height]); // Wrap the initialization in useMemo to avoid unnecessary re-renders
+	}, [props.width]); // Wrap the initialization in useMemo to avoid unnecessary re-renders
 
 	// Get a reference to the canvas element
 	const canvasRef = React.useRef(null);
